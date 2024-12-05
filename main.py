@@ -87,7 +87,27 @@ query_4= """
         GROUP BY month(d1.order_date) ,year(d1.order_date),year(d2.order_date)
         ORDER BY MONTH,YEAR1,YEAR2
 """
-res_4 = conn.execute(query_4)
-for row in res_4:
-    print(row)
+# res_4 = conn.execute(query_4)
+# for row in res_4:
+#     print(row)
     
+# for each category which month had the highest sales
+query_5 = """
+          WITH new AS(
+                  SELECT category, month(order_date) AS month,SUM(sales_price) AS sales
+                  FROM df_orders
+                  GROUP BY category, month(order_date)
+          )
+          
+          SELECT month, category, sales
+          FROM new
+          WHERE sales = (SELECT MAX(sales) FROM new AS n
+                                WHERE n.category = new.category)
+        
+""" 
+
+res_5 = conn.execute(query_5)
+for row in res_5:
+    print(row)
+
+# sub category with highest growth by profit in 2023 compared to 2022
